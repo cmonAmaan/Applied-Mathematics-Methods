@@ -8,7 +8,8 @@ Description: Numerical computations, function plotting, and coordinate conversio
 
 import numpy as np
 from matplotlib import pyplot as plt
-
+if not os.path.exists("results"):
+    os.makedirs("results")
 ### Problem 1: Numerical Computation
 def compute_expression():
     """
