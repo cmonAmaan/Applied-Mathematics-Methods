@@ -1,0 +1,110 @@
+# -*- coding: utf-8 -*-
+"""
+Complex Function Iterations and 2D Visualization
+Author: Amaan
+Date: February 23, 2023
+Description: This project demonstrates array manipulations, 
+heatmap visualizations, and iterative complex functions.
+"""
+
+import numpy as np
+from matplotlib import pyplot as plt
+
+# ------------------------ Part 1: Array Operations ------------------------
+
+def array_average(array1, array2):
+    """
+    Compute the average of two input arrays.
+    Inputs:
+        array1: NumPy array
+        array2: NumPy array
+    Output:
+        Average of the two arrays
+    """
+    if array1.shape != array2.shape:
+        raise ValueError("Input arrays must have the same shape")
+    return (array1 + array2) / 2
+
+# Example usage of array_average
+a = np.array([6, 2])
+b = np.array([-3, -1])
+print("Array Average:", array_average(a, b))
+
+# ------------------------ Part 2: Matrix Manipulation ------------------------
+
+# Problem 2: Create a checkerboard pattern in a matrix
+B = np.zeros((100, 300))
+for i in range(100):
+    for j in range(300):
+        B[i, j] = (i + j) % 2
+
+# Problem 3: Modify a column in the matrix
+B[:, 150] = -1
+print("Modified Matrix with Column 150 set to -1")
+
+# Problem 4: Set odd rows to 2
+for i in range(1, 100, 2):
+    B[i, :] = 2
+
+# Visualize the matrix
+plt.matshow(B, cmap='gray')
+plt.title("Checkerboard Pattern with Modifications")
+plt.show()
+
+# ------------------------ Part 3: Iterative Complex Functions ------------------------
+
+def wacky(C, D):
+    """
+    Check if the magnitude of the final value of the sequence
+    z[n+1] = z[n]^2 + C remains below threshold D.
+    Inputs:
+        C: complex number
+        D: float, threshold value
+    Output:
+        Boolean; True if abs(z[-1]) < D, False otherwise
+    """
+    N = 20
+    z = np.zeros(N, dtype=complex)
+    z[0] = 0 + 0j
+    for i in range(N - 1):
+        z[i + 1] = z[i]**2 + C
+        if abs(z[i]) >= D:
+            return False
+    return True
+
+# ------------------------ Part 4: Heatmap Visualization ------------------------
+
+# Define the domain for real and imaginary parts
+xl, xr = -2.5, 2.5  # Real part range
+yl, yr = -2.5, 2.5  # Imaginary part range
+resolution = 0.02   # Resolution for the grid
+real_parts = np.arange(xl, xr, resolution)
+imag_parts = np.arange(yl, yr, resolution)
+
+# Storage for results
+results = np.zeros((len(imag_parts), len(real_parts)))
+
+# Experiment with different D thresholds
+D_values = [1, 1.5, 2, 2.5, 3]
+colormap = plt.cm.YlOrBr  # Colormap for heatmap
+
+for D in D_values:
+    # Compute results for each threshold
+    for i in range(len(imag_parts)):
+        for j in range(len(real_parts)):
+            x = real_parts[j]
+            y = imag_parts[i]
+            C = x + y * 1j
+            results[i, j] = wacky(C, D)
+
+    # Plot the results
+    fig, ax = plt.subplots()
+    cax = ax.pcolor(real_parts, imag_parts, results, cmap=colormap, vmin=0, vmax=1)
+    ax.set_xlabel("Real Part")
+    ax.set_ylabel("Imaginary Part")
+    ax.set_aspect("equal")
+    ax.set_title(f"Threshold D={D}")
+    fig.colorbar(cax)
+    plt.xlim([xl, xr])
+    plt.ylim([yl, yr])
+    plt.show()
