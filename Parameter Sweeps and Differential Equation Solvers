@@ -1,0 +1,121 @@
+# -*- coding: utf-8 -*-
+"""
+Parameter Sweeps and Differential Equation Solvers
+Author: Amaan
+Date: March 9, 2023
+Description: This project explores parameter sweeps, recursive functions, 
+and numerical solutions to differential equations.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------ Part 1: Loops and Conditionals ------------------------
+
+# Example of a simple for loop
+for i in range(5, 100, 7):
+    print(i)
+
+# Counting divisors of a number
+x = 16154762
+counter = 0
+for i in range(1, x + 1):
+    if x % i == 0:
+        counter += 1
+print("Number of divisors:", counter)
+
+# ------------------------ Part 2: Recursive Function ------------------------
+
+def recursive_function(c):
+    """
+    Implements a recursive sequence:
+        - If c is even: c = c / 2
+        - If c is odd: c = 3 * c + 1
+    Returns the count of terms until c reaches 1.
+    """
+    counter = 0
+    while c != 1:
+        if c % 2 == 0:
+            c = c / 2
+        else:
+            c = 3 * c + 1
+        counter += 1
+    return counter
+
+print("Steps to reach 1 (10):", recursive_function(10))
+
+# ------------------------ Part 3: Parameter Sweep ------------------------
+
+# Define a modified recursive function
+def modified_function(c):
+    """
+    Similar to the recursive function but also counts how often 
+    values exceed the initial input.
+    """
+    counter = 0
+    counter2 = 0  # Tracks terms exceeding the initial value
+    c1 = c
+    while c != 1:
+        if c > c1:
+            counter2 += 1
+        if c % 2 == 0:
+            c = c / 2
+        else:
+            c = 3 * c + 1
+        counter += 1
+    return counter2
+
+# Perform a parameter sweep
+x = np.linspace(1, 1000, 100)
+results = np.zeros(len(x))
+for i in range(len(x)):
+    results[i] = modified_function(x[i])
+
+# Visualize the results
+plt.plot(x, results, color='red', linewidth=2)
+plt.xlabel('Input Value')
+plt.ylabel('Terms Greater Than Initial Value')
+plt.title('Parameter Sweep Results')
+plt.show()
+
+# ------------------------ Part 4: Differential Equation Solver ------------------------
+
+# Solve dθ/dt = ω, with θ(0) = 3π/4
+n = 1000  # Number of time steps
+h = 2 * np.pi / n  # Time step size
+
+# Storage arrays
+t = np.zeros(n)
+theta = np.zeros(n)
+
+# Initial conditions
+theta[0] = 3 * np.pi / 4
+t[0] = 0
+
+# Solve for θ over time
+for i in range(1, n):
+    t[i] = t[i - 1] + h
+    theta[i] = theta[i - 1] + h * theta[i - 1]
+
+# Plot the solution for θ
+plt.plot(t, theta, color='red', linewidth=2)
+plt.xlabel('Time (t)')
+plt.ylabel('Theta (θ)')
+plt.title('dθ/dt = ω, θ(0) = 3π/4')
+plt.show()
+
+# Solve dω/dt = -sin(θ), with ω(0) = 0
+w = np.zeros(n)  # Storage for ω
+w[0] = 0  # Initial condition
+
+# Solve for ω over time
+for i in range(1, n):
+    t[i] = t[i - 1] + h
+    w[i] = w[i - 1] + h * (-np.sin(theta[i - 1]))
+
+# Plot the solution for ω
+plt.plot(t, w, color='red', linewidth=2)
+plt.xlabel('Time (t)')
+plt.ylabel('Omega (ω)')
+plt.title('dω/dt = -sin(θ), ω(0) = 0')
+plt.show()
