@@ -1,0 +1,116 @@
+# -*- coding: utf-8 -*-
+"""
+Array Manipulations, Conditionals, and Financial Simulations
+Author: Amaan
+Date: February 16, 2023
+Description: This project explores plotting, array manipulations, conditional logic, and financial modeling.
+"""
+
+import numpy as np
+from matplotlib import pyplot as plt
+
+# ------------------------ Part 1: Plotting Functions ------------------------
+
+def f(t):
+    """
+    Computes the function f(t) = sin(π * t * (16t^5 - 20t^3 + 5t)).
+    Input:
+        t: Numerical, array or scalar
+    Output:
+        Numerical value(s) of f(t)
+    """
+    return np.sin(np.pi * t * (16 * t**5 - 20 * t**3 + 5 * t))
+
+# Generate data and plot the function
+t = np.linspace(-1, 1, 1000)
+y = f(t)
+
+# Plot
+plt.plot(t, y, label="f(t)")
+plt.xlabel("t")
+plt.ylabel("f(t)")
+plt.title("Plot of f(t)")
+plt.legend()
+plt.show()
+
+# Scatter plot
+fig, ax = plt.subplots()
+ax.scatter(t, y, color='turquoise')
+ax.set_xlabel("t")
+ax.set_ylabel("f(t)")
+ax.set_title("Scatter Plot of f(t)")
+plt.show()
+
+# ------------------------ Part 2: Array Manipulations ------------------------
+
+# Problem 3a: Create an array of zeros with 50 entries, set 4th entry to 0.5
+array = np.zeros(50)
+array[3] = 0.5
+print("Array with 4th entry set to 0.5:", array)
+
+# Problem 3b: Create an array from 0 to 99 inclusive, with steps of 11
+array2 = np.arange(0, 100, 11)
+print("Array with steps of 11:", array2)
+
+# Problem 3c: Create an array of size 300 with repeated pattern [1, -2, 6]
+pattern = np.tile([1, -2, 6], 100)[:300]
+if len(pattern) == 300:
+    print("Pattern array created successfully!")
+else:
+    print("Error in pattern creation.")
+print("Pattern array:", pattern)
+
+# ------------------------ Part 3: Loops and Iterative Calculations ------------------------
+
+# Problem 4: Exponential growth using a loop
+p = 1
+print("Exponential Growth Table:")
+for k in range(10):
+    print(f"Step {k}: {p}")
+    p = 2 * p
+
+# Problem 5: Check if one number is a multiple of another
+def is_multiple(m, n):
+    """
+    Check if m is a multiple of n.
+    Inputs:
+        m: Integer
+        n: Integer (non-zero)
+    Output:
+        Boolean
+    """
+    if n == 0:
+        raise ValueError("n must not be zero")
+    return m % n == 0
+
+# Test the function
+print("Is multiple function tests:")
+print(is_multiple(4, 2))  # True
+print(is_multiple(2, 4))  # False
+print(is_multiple(5, 2))  # False
+print(is_multiple(12, 5))  # False
+print(is_multiple(0, 60))  # True
+
+# Problem 6: Moo-Cow Game
+print("Moo-Cow Game:")
+for i in range(1, 101):
+    if is_multiple(i, 3):
+        print("moo")
+    if is_multiple(i, 5):
+        print("cow")
+
+# ------------------------ Part 4: Financial Simulations ------------------------
+
+# Problem 1: Simulate monthly income, expenses, and savings
+m = 3000  # Monthly income after tax
+W = 0     # Initial cash in account
+r = 0.04 / 12  # Monthly interest rate
+e = 2800  # Monthly expenses
+s = 3000  # Cost of a moderate surprise expense
+p = 0.002  # Probability of a surprise each month
+
+# Problem 2: Simulate 12 months of cash flow
+print("Monthly Account Balances:")
+for i in range(12):
+    W = (1 + r) * W + m - e
+    print(f"Month {i + 1}: {W:.2f}")
