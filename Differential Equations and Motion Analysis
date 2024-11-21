@@ -1,0 +1,112 @@
+# -*- coding: utf-8 -*-
+"""
+Numerical Methods, Turtle Positioning, and Motion Analysis
+Author: Amaan
+Date: March 3, 2023
+Description: This project explores numerical solutions to differential equations,
+recursive sequences, and turtle positioning using iterative optimization.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+# ------------------------ Part 1: Recursive and Exact Solutions ------------------------
+
+# Recursive sequence function
+def DArecursive(n, u_n, h):
+    """
+    Recursive formula for u[n+1] = u[n] + h * 2 * u[n] * (1 - u[n]).
+    """
+    return u_n + h * 2 * u_n * (1 - u_n)
+
+# Exact solution for comparison
+def DAexact(t):
+    """
+    Exact solution for the differential equation du/dt = 2u(1-u).
+    """
+    return np.exp(2 * t) / (9 + np.exp(2 * t))
+
+# Initial conditions and parameters
+u0 = 0.1  # Initial value
+h = 0.2   # Step size
+time_values = np.arange(0, 4 + h, h)  # Time range
+Uvalues = np.zeros(len(time_values))
+Uvalues[0] = u0
+
+# Compute numerical solution
+for i in range(1, len(time_values)):
+    Uvalues[i] = DArecursive(i - 1, Uvalues[i - 1], h)
+
+# Plot numerical and exact solutions
+plt.plot(time_values, Uvalues, 'b', label='Numerical solution')
+plt.plot(time_values, DAexact(time_values), 'r', label='Exact solution')
+plt.xlabel('Time (t)')
+plt.ylabel('u(t)')
+plt.title('du/dt = 2u(1-u), u(0) = 0.1')
+plt.legend()
+plt.show()
+
+# ------------------------ Part 2: Solving Differential Equations ------------------------
+
+# Define differential equation for vertical motion
+def vertical_motion(y, t):
+    """
+    Defines a system of differential equations for vertical motion.
+    """
+    dydt = y[1]
+    dvdt = -9.8 - 0.1 * abs(y[1])
+    return [dydt, dvdt]
+
+# Initial conditions
+y0 = [100, 20]  # Initial height and velocity
+time_range = np.linspace(0, 10.3, 1000)
+
+# Solve the differential equation
+solution = odeint(vertical_motion, y0, time_range)
+y_values = solution[:, 0]
+
+# Plot the solution
+plt.plot(time_range, y_values)
+plt.xlabel('Time (s)')
+plt.ylabel('Height (m)')
+plt.title('Vertical Motion')
+plt.show()
+
+# ------------------------ Part 3: Turtle Positioning and Optimization ------------------------
+
+# Function to calculate dissatisfaction
+def CALCdissatisfaction(turtle_positions):
+    """
+    Calculate dissatisfaction score based on deviation from steady-state positions.
+    """
+    n = len(turtle_positions)
+    steady_state = np.zeros((n, 2))
+    steady_state[:, 0] = np.linspace(0, 1, n)
+    steady_state[:, 1] = np.linspace(0, 1, n)
+    x_diff = np.abs(turtle_positions[:, 0] - steady_state[:, 0])
+    y_diff = np.abs(turtle_positions[:, 1] - steady_state[:, 1])
+    return np.sum(x_diff) + np.sum(y_diff)
+
+# Function to reposition turtles
+def reposition(turtles):
+    """
+    Reposition turtles to minimize dissatisfaction iteratively.
+    """
+    n = turtles.shape[0]
+    new_turtles = np.zeros((n, 2))
+    new_turtles[0] = turtles[0]  # Keep first turtle fixed
+    new_turtles[-1] = turtles[-1]  # Keep last turtle fixed
+    for k in range(1, n - 1):
+        new_turtles[k] = (turtles[k + 1] + turtles[k - 1]) / 2
+    return new_turtles
+
+# Initial turtle positions
+turtles = np.array([[0, 0], [0.6, -0.3], [0, 0.1], [1, 1]])
+
+# Iterative repositioning and dissatisfaction calculation
+print("Turtle Positioning Optimization:")
+for i in range(20):
+    turtles = reposition(turtles)
+    dissatisfaction_score = CALCdissatisfaction(turtles)
+    print(f"Iteration {i + 1}: Dissatisfaction = {dissatisfaction_score:.4f}")
