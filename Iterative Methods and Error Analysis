@@ -1,0 +1,156 @@
+# -*- coding: utf-8 -*-
+"""
+Iterative Methods and Error Analysis
+Author: Amaan
+Date: February 8-9, 2023
+Description: This project explores numerical computations, sequence summations,
+error analysis, and iterative methods using Python.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------ Part 1: Plotting Functions ------------------------
+
+# Problem 1: Plot a given mathematical function
+x = np.linspace(-np.pi, np.pi, 432)
+y = (abs(x + 1) ** -0.5) * np.cos(5 * x)
+
+fig1, ax1 = plt.subplots()
+ax1.plot(x, y)
+ax1.set_xlabel('x')
+ax1.set_ylabel('y')
+ax1.set_title('Plot of Problem 1')
+plt.show()
+
+# Problem 2: Scatter plot of sin(theta) and cos(theta)
+theta = np.linspace(-2 * np.pi, 2 * np.pi, int((2 * np.pi) / (np.pi / 12)))
+cos_theta = np.cos(theta)
+sin_theta = np.sin(theta)
+
+fig2, ax2 = plt.subplots()
+ax2.scatter(theta, cos_theta, label='cos(theta)', color='blue')
+ax2.scatter(theta, sin_theta, label='sin(theta)', color='orange')
+ax2.set_xlabel('theta')
+ax2.set_ylabel('y')
+ax2.set_title('Scatter Plot of sin(theta) and cos(theta)')
+ax2.legend()
+plt.show()
+
+# ------------------------ Part 2: Summation and Error Analysis ------------------------
+
+# Problem 3: Summation of the sequence u_n = (-1)^n / n
+n = np.arange(1, 501)
+u = (-1) ** n / n
+sum_u = np.sum(u)
+print("Sum of first 500 terms of sequence u_n:", sum_u)
+
+# Problem 4: Summation of the sequence v_n = (-1)^n / n^2
+v = (-1) ** n / n ** 2
+sum_v = np.sum(v)
+print("Sum of first 500 terms of sequence v_n:", sum_v)
+
+# Problem 5: Summation of the sequence w_n = n * exp(-n)
+w = n * np.exp(-n)
+sum_w = np.sum(w)
+print("Sum of first 500 terms of sequence w_n:", sum_w)
+
+# ------------------------ Part 3: Array Manipulations ------------------------
+
+# Problem 6-9: Array manipulations
+array = np.arange(5.3, 211.3, 5)
+print("Original array:", array)
+
+# Modify array values as specified
+array[-1] = 0
+print("Modified array with last element set to 0:", array)
+
+array[2] = -1
+print("Modified array with third element set to -1:", array)
+
+# Print specific values
+print("Third element:", array[2], "Last element:", array[-1])
+
+# ------------------------ Part 4: Iterative Calculations ------------------------
+
+# Problem 10: Iterative calculation for sequence b_n
+N = 100  # Number of terms
+b = np.zeros(N)
+b[0] = np.pi / 4  # Initial value
+
+for n in range(1, N):
+    b[n] = 4 * b[n - 1] * (1 - b[n - 1])
+
+print("100th term of sequence b_n:", b[N - 1])
+
+# Problem 11: Loan balance calculations
+def calculate_balance(v0, interest_rate, payment, N):
+    """
+    Calculate remaining loan balance after N payments.
+    """
+    balance = np.zeros(N)
+    balance[0] = v0
+
+    for n in range(1, N):
+        balance[n] = (1 + interest_rate / 12) * balance[n - 1] - payment
+
+    return balance[N - 1]
+
+v0 = 20000
+interest_rate = 0.05
+N = 60  # Number of payments
+payment = 300
+
+remaining_balance = calculate_balance(v0, interest_rate, payment, N)
+print("Remaining balance after 60 payments:", remaining_balance)
+
+# Determine smallest monthly payment to pay off loan
+payment = 0
+while calculate_balance(15000, 0.03, payment, N) > 0:
+    payment += 1
+
+print("Smallest monthly payment to pay off the loan:", payment)
+
+# ------------------------ Part 5: Error Analysis ------------------------
+
+# Error calculation
+def error_calculation(estimate, exact):
+    absolute_error = np.abs(estimate - exact)
+    relative_error = np.abs(estimate - exact) / np.abs(exact)
+    return absolute_error, relative_error
+
+# Problem: Calculate error for given sequences
+sequence_terms = 500
+exact_value = 1  # Replace with the actual exact value for testing
+
+# Example: Calculating error for sequence u_n
+u = (-1) ** n / n
+sum_u = np.sum(u)
+absolute_error, relative_error = error_calculation(sum_u, exact_value)
+print("Absolute Error:", absolute_error)
+print("Relative Error:", relative_error)
+
+# ------------------------ Part 6: Iterative Square Root Approximation ------------------------
+
+def approximate_sqrt(a, n):
+    """
+    Approximate the square root of `a` using iterative method.
+    """
+    x = np.zeros(n + 1)
+    x[0] = 1  # Initial guess
+    for i in range(n):
+        x[i + 1] = 0.5 * (x[i] + a / x[i])
+    return x
+
+# Example usage
+a = 16154762
+n = 100
+x = approximate_sqrt(a, n)
+
+# Plot relative error
+rel_error = np.abs((x - np.sqrt(a)) / np.sqrt(a))
+plt.plot(range(n + 1), rel_error)
+plt.xlabel("Iteration")
+plt.ylabel("Relative Error")
+plt.title("Relative Error of Square Root Approximation")
+plt.show()
