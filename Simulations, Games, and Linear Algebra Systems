@@ -1,0 +1,143 @@
+# -*- coding: utf-8 -*-
+"""
+Simulations, Games, and Linear Algebra Systems
+Author: Amaan
+Date: April 15, 2023
+Description: This project explores array manipulations, game simulations, 
+and solving linear algebra systems.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------ Part 1: Array Manipulations ------------------------
+
+# Array of squares from 4 to 12
+my_array = [n**2 for n in range(4, 13)]
+print("Array of squares:", my_array)
+
+# Log base 2 of odd numbers up to 601
+my_array2 = np.log2(np.arange(1, 602, 2))
+print("Log base 2 of odd numbers:", my_array2)
+
+# Powers of 2 from 2^1 to 2^11
+my_array3 = [2**n for n in range(1, 12)]
+print("Powers of 2:", my_array3)
+
+# Loop to print odd numbers from 1 to 12
+print("Odd numbers from 1 to 12:")
+for i in range(1, 13, 2):
+    print(i)
+
+# ------------------------ Part 2: Plotting Functions ------------------------
+
+# Plot multiples of sin(pi*x)
+x = np.linspace(-1, 1, 500)
+for i in range(1, 12, 2):
+    y = i * np.sin(np.pi * x)
+    plt.plot(x, y, label=f'{i}*sin(pi*x)')
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Plots of sin(pi*x) to 11*sin(pi*x) on [-1, 1]')
+plt.legend()
+plt.savefig('sin_multiples_plot.pdf')
+plt.show()
+
+# ------------------------ Part 3: Ratios ------------------------
+
+def ratios(arr):
+    """
+    Calculate the ratio of successive entries in a 1D array.
+    """
+    return [arr[i] / arr[i - 1] if i > 0 else 1 for i in range(len(arr))]
+
+print("Ratios of [3, 6, 12, 24]:", ratios([3, 6, 12, 24]))
+
+# ------------------------ Part 4: Game Simulation ------------------------
+
+def simulate_game():
+    """
+    Simulate a game where a person plays 20 rounds with given win/lose probabilities.
+    Returns the total balance after 20 rounds.
+    """
+    balance = 0
+    for _ in range(20):
+        outcome = np.random.choice(['win', 'lose'], p=[0.41, 0.59])
+        if outcome == 'win':
+            balance += np.random.choice([100, 1000], p=[0.4 / 0.41, 0.01 / 0.41])
+        else:
+            balance -= 100
+    return balance
+
+# Perform multiple realizations and visualize
+def multiple_realizations(realizations=100000):
+    balances = [simulate_game() for _ in range(realizations)]
+    plt.hist(balances, bins=100, color='blue', edgecolor='black')
+    plt.axvline(x=20 * (0.4 * 100 + 0.01 * 1000 - 0.59 * 100), color='red', linestyle='dashed')
+    plt.xlabel('Total Winnings')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Total Winnings After 20 Rounds')
+    plt.show()
+
+multiple_realizations()
+
+# ------------------------ Part 5: Linear Algebra Systems ------------------------
+
+# Solve Ax = b using numpy
+A = np.array([[2, -3], [-4, 4]])
+b = np.array([[6], [8]])
+x = np.linalg.solve(A, b)
+
+# Check the solution accuracy
+norm_difference = np.linalg.norm(b - A @ x)
+if norm_difference < 1e-12:
+    print("YESSSS PERFECT LIKE PERSONA 5")
+else:
+    print("Not close.")
+
+# Gaussian elimination solver
+def gaussian_elimination(T, b):
+    """
+    Perform Gaussian elimination to solve Ax = b.
+    """
+    A = np.hstack((T, b))
+    m, n = T.shape
+    for k in range(n):
+        pivot = A[k, k]
+        A[k, :] /= pivot
+        for i in range(k + 1, m):
+            A[i, :] -= A[i, k] * A[k, :]
+    return A
+
+def back_substitution(U):
+    """
+    Perform back substitution on an upper triangular matrix U.
+    """
+    n = U.shape[0]
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = U[i, -1] / U[i, i]
+        U[:i, -1] -= U[:i, i] * x[i]
+    return x
+
+def custom_solver(T, b):
+    """
+    Solve Ax = b using custom Gaussian elimination and back substitution.
+    """
+    augmented_matrix = gaussian_elimination(T, b)
+    return back_substitution(augmented_matrix)
+
+# Example matrix and vector
+T = np.array([[2, 2, -1], [6, 6, 2], [1, -1, -3]])
+b = np.array([[6], [0], [1]])
+
+x1 = custom_solver(T.copy(), b.copy())
+x2 = np.linalg.solve(T, b)
+
+print("Custom solver solution:", x1)
+print("Numpy solver solution:", x2)
+
+# Error between solutions
+error = np.linalg.norm(x1 - x2)
+print("Error between solutions:", error)
