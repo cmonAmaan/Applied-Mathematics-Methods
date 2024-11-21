@@ -1,0 +1,151 @@
+# -*- coding: utf-8 -*-
+"""
+Monte Carlo Simulations and Random Walks
+Author: Amaan
+Date: March 31, 2023
+Description: This project explores Monte Carlo simulations for betting outcomes
+and random walks in a city-like grid, analyzing probabilities and patterns.
+"""
+
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ------------------------ Part 1: Betting Simulations ------------------------
+
+def simulate_betting(num_rounds):
+    """
+    Simulates betting with repeated coin flips for multiple rounds.
+    Parameters:
+        num_rounds (int): Number of betting rounds to simulate.
+    Returns:
+        winnings (int): Final winnings after all rounds.
+    """
+    winnings = 0
+    for _ in range(num_rounds):
+        flip = random.choice(['heads', 'tails'])
+        if flip == 'heads':
+            winnings += 1
+        else:
+            winnings -= 1
+    return winnings
+
+# Simulate 100 rounds of betting and plot results
+def simulate_and_plot_betting(num_rounds, num_trials):
+    """
+    Simulates multiple betting rounds and visualizes outcomes.
+    """
+    results = [simulate_betting(num_rounds) for _ in range(num_trials)]
+    
+    # Plot results
+    plt.plot(range(1, num_trials + 1), results, color='blue', linewidth=1)
+    plt.xlabel('Rounds')
+    plt.ylabel('Winnings')
+    plt.title('Simulated Coin Flips')
+    plt.show()
+
+simulate_and_plot_betting(100, 100)
+
+# Estimate probability of winning $10 or more after 100 rounds
+num_trials = 1000
+num_successes = sum(1 for _ in range(num_trials) if simulate_betting(100) >= 10)
+probability = num_successes / num_trials
+print(f"The probability of winning $10 or more after 100 rounds is: {probability:.4f}")
+
+# ------------------------ Part 2: Histogram of Final Winnings ------------------------
+
+def simulate_and_visualize_betting(num_rounds, num_trials):
+    """
+    Simulates betting and visualizes the histogram of final winnings.
+    """
+    final_winnings = [simulate_betting(num_rounds) for _ in range(num_trials)]
+    
+    # Plot histogram
+    plt.hist(final_winnings, bins=20, color='purple', edgecolor='black')
+    plt.axvline(x=10, color='r', linestyle='--', label='$10 Threshold')
+    plt.xlabel('Final Winnings')
+    plt.ylabel('Frequency')
+    plt.title('Histogram of Final Winnings')
+    plt.legend()
+    plt.show()
+    
+    # Calculate probability
+    num_successes = sum(1 for x in final_winnings if x >= 10)
+    probability = num_successes / num_trials
+    print(f"Probability of winning $10 or more after 100 rounds: {probability:.4f}")
+
+simulate_and_visualize_betting(100, 1000)
+
+# ------------------------ Part 3: Random Walks ------------------------
+
+# Simulate a random walk
+def simulate_random_walk(n):
+    """
+    Simulates a 2D random walk for n steps.
+    Parameters:
+        n (int): Number of steps.
+    Returns:
+        x (np.ndarray): X-coordinates of the walk.
+        y (np.ndarray): Y-coordinates of the walk.
+    """
+    x = np.zeros(n)
+    y = np.zeros(n)
+    for i in range(1, n):
+        dx, dy = np.random.choice([-1, 1]), np.random.choice([-1, 1])
+        x[i] = x[i - 1] + dx
+        y[i] = y[i - 1] + dy
+    return x, y
+
+# Plot a single random walk
+x, y = simulate_random_walk(200)
+plt.plot(x, y, marker='o', markersize=2, color='green')
+plt.xlabel('X-coordinate')
+plt.ylabel('Y-coordinate')
+plt.title("Maria's Random Walk in the City")
+plt.gca().set_aspect('equal', adjustable='box')
+plt.show()
+
+# ------------------------ Part 4: Random Walk with Escape Conditions ------------------------
+
+def walk_in_city(n, k):
+    """
+    Simulates Maria's random walk until she escapes the city or gets tired.
+    Parameters:
+        n (int): Total number of blocks Maria can walk.
+        k (int): Size of the city center.
+    Returns:
+        steps (int): Number of steps taken.
+        escaped (bool): Whether Maria escaped the city.
+    """
+    x, y = 0, 0  # Starting position
+    for step in range(n):
+        dx, dy = np.random.choice([-1, 1]), np.random.choice([-1, 1])
+        x += dx
+        y += dy
+        if max(abs(x), abs(y)) >= k:
+            return step + 1, True  # Escaped
+    return n, False  # Tired but did not escape
+
+# Simulate multiple realizations
+n_realities = 10000
+n_blocks = 200
+city_size = 15
+escaped_count = 0
+blocks_walked = []
+
+for _ in range(n_realities):
+    steps, escaped = walk_in_city(n_blocks, city_size)
+    blocks_walked.append(steps)
+    if escaped:
+        escaped_count += 1
+
+# Calculate escape fraction
+escaped_fraction = escaped_count / n_realities
+print(f"Fraction of times Maria escaped: {escaped_fraction:.4f}")
+
+# Visualize the distribution of blocks walked
+plt.hist(blocks_walked, bins=range(0, 210, 10), color='orange', edgecolor='black')
+plt.xlabel('Number of Blocks Walked')
+plt.ylabel('Frequency')
+plt.title('Distribution of Blocks Walked')
+plt.show()
